@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BettingMarket, EventStatus, SportType } from './betting.interface';
-import { randomUUID } from 'crypto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { NotFoundException } from '@nestjs/common';
 import { CreateBettingMarketDto } from './dto/create-betting-market.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class BettingService {
@@ -12,6 +12,15 @@ export class BettingService {
   private readonly logger = new Logger(BettingService.name);
 
   constructor(private readonly eventEmitter: EventEmitter2) {}
+
+  @Cron(CronExpression.EVERY_MINUTE, { name: 'oddsCron' })
+  handleOddsCron() {
+    this.logger.log('Running odds update cron job');
+    this.bettingMarkets.forEach((market) => {
+      const updatedOdds = parseFloat((1 + Math.random() * 4).toFixed(2));
+      this.updateOdds(market.id, updatedOdds);
+    });
+  }
 
   create(market: CreateBettingMarketDto): BettingMarket {
     const newMarket: BettingMarket = {
