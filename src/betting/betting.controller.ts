@@ -12,7 +12,7 @@ import { CreateBettingMarketDto } from './dto/create-betting-market.dto';
 import { UpdateOddsDto } from './dto/update-odds.dto';
 import { SportType, EventStatus } from './betting-market.enums';
 import { BettingMarketDto } from './dto/betting-market-response.dto';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 
 @Controller('betting')
 export class BettingController {
@@ -26,6 +26,8 @@ export class BettingController {
 
   @Get()
   @ApiOkResponse({ type: [BettingMarketDto] })
+  @ApiQuery({ name: 'sportType', enum: SportType, required: false })
+  @ApiQuery({ name: 'eventStatus', enum: EventStatus, required: false })
   getMarkets(
     @Query('sportType') sportType?: SportType,
     @Query('eventStatus') eventStatus?: EventStatus,
@@ -45,7 +47,6 @@ export class BettingController {
     @Param('id') id: string,
     @Body() updateOddsDto: UpdateOddsDto,
   ): BettingMarketDto {
-    console.log('updateOddsDto', updateOddsDto);
     const { odds } = updateOddsDto;
     return this.bettingService.updateOdds(id, odds);
   }

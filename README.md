@@ -2,7 +2,6 @@
 
 A minimal in-memory **NestJS** betting service demonstrating DTO validation, custom services, scheduled tasks, and event-driven architecture.
 
-
 ## 🧪 Setup and Run Instructions
 
 1. Clone the repository:
@@ -29,18 +28,11 @@ npm run test
 npm run start:dev
 ```
 
----
+5. Access API documentation and endpoints
 
-
-## 🧱 Architecture Overview
-
-The app uses **NestJS** for a modular, testable structure. Here's a breakdown:
-
-- `BettingService` holds in-memory data and handles core logic.
-- `EventEmitter2` decouples domain logic from side effects (e.g. logging).
-- DTOs enforce runtime validation using `class-validator`.
-- A `CronJob` updates all market odds randomly every few minutes, mimicking live odds movement.
-- Logging is handled via Nest's built-in `Logger` service.
+```
+http://localhost:3000/api
+```
 
 ---
 
@@ -111,6 +103,18 @@ Update the odds of a specific market.
 }
 ```
 
+## 🧱 Architecture Overview
+
+The app uses **NestJS** for a modular, testable structure. Here's a breakdown:
+
+- `BettingService` holds in-memory data and handles core logic.
+- `EventEmitter2` decouples domain logic from side effects (e.g. logging).
+- DTOs enforce runtime validation using `class-validator`.
+- A `CronJob` updates all market odds randomly every few minutes, mimicking live odds movement.
+- Logging is handled via Nest's built-in `Logger` service.
+
+---
+
 ## 📈 Scaling Considerations
 
 While this project uses an in-memory array for simplicity, a production-ready system should:
@@ -135,6 +139,7 @@ While this project uses an in-memory array for simplicity, a production-ready sy
 ---
 
 ## 🤖 AI Usage Documentation
+
 - **GitHub Copilot** was used for autocompletion and code generation suggestions during development.
 - **ChatGPT** was used to assist with spelling, grammar, and clarity when writing the documentation.
 
