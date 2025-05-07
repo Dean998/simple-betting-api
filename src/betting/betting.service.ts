@@ -8,16 +8,19 @@ import { CreateBettingMarketDto } from './dto/create-betting-market.dto';
 @Injectable()
 export class BettingService {
   private bettingMarkets: BettingMarket[] = [];
+  private currentMarketId = 1;
   private readonly logger = new Logger(BettingService.name);
 
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   create(market: CreateBettingMarketDto): BettingMarket {
     const newMarket: BettingMarket = {
-      id: randomUUID(),
+      id: this.currentMarketId.toString(),
       ...market,
     };
+    this.currentMarketId++;
     this.bettingMarkets.push(newMarket);
+    this.logger.log(`Betting market created: ${JSON.stringify(newMarket)}`);
     return newMarket;
   }
 
