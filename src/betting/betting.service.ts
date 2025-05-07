@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { BettingMarket, EventStatus, SportType } from './betting.interface';
 import { randomUUID } from 'crypto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { NotFoundException } from '@nestjs/common';
+import { CreateBettingMarketDto } from './dto/create-betting-market.dto';
 
 @Injectable()
 export class BettingService {
@@ -10,10 +12,10 @@ export class BettingService {
 
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
-  create(market: Omit<BettingMarket, 'id'>): BettingMarket {
+  create(market: CreateBettingMarketDto): BettingMarket {
     const newMarket: BettingMarket = {
-      ...market,
       id: randomUUID(),
+      ...market,
     };
     this.bettingMarkets.push(newMarket);
     return newMarket;
@@ -42,7 +44,18 @@ export class BettingService {
 
     if (!bettingMarket) {
       this.logger.error(`Betting market with ID ${marketId} not found.`);
-      throw new Error(`Betting market with ID ${marketId} not found.`);
+      throw new NotFoundException(
+        `Betting market with ID ${marketId} not found.`,
+      );
+    }
+
+    const oldOdds = bettingMarket.odds;
+
+    if (oldOdds === updatedOdds) {
+      this.logger.warn(
+        `No change in odds for betting market ${bettingMarket.id}. Current odds: ${oldOdds}`,
+      );
+      return bettingMarket;
     }
 
     bettingMarket.odds = updatedOdds;
@@ -50,9 +63,11 @@ export class BettingService {
     this.eventEmitter.emit('odds.updated', bettingMarket);
 
     this.logger.log(
-      `Event emitted: Odds for betting market ${bettingMarket.id} updated to ${updatedOdds} from ${bettingMarket.odds}`,
+      `Event emitted: Odds for betting market ${bettingMarket.id} updated to ${updatedOdds} from ${oldOdds}`,
     );
-
+    this.logger.debug(
+      `Betting market details: ${JSON.stringify(bettingMarket)}`,
+    );
     return bettingMarket;
   }
 

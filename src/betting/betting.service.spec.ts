@@ -1,7 +1,7 @@
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BettingService } from './betting.service';
 import { EventStatus, SportType } from './betting.interface';
-import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
+import { BettingService } from './betting.service';
 
 describe('BettingService', () => {
   let service: BettingService;
