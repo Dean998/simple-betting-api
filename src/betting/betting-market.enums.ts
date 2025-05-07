@@ -9,11 +9,3 @@ export enum SportType {
   BASKETBALL = 'basketball',
   TENNIS = 'tennis',
 }
-
-export interface BettingMarket {
-  id: string;
-  name: string;
-  sportType: SportType;
-  eventStatus: EventStatus;
-  odds: number;
-}

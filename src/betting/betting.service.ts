@@ -1,13 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { BettingMarket, EventStatus, SportType } from './betting.interface';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { NotFoundException } from '@nestjs/common';
 import { CreateBettingMarketDto } from './dto/create-betting-market.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { SportType, EventStatus } from './betting-market.enums';
+import { BettingMarketDto } from './dto/betting-market-response.dto';
 
 @Injectable()
 export class BettingService {
-  private bettingMarkets: BettingMarket[] = [];
+  private bettingMarkets: BettingMarketDto[] = [];
   private currentMarketId = 1;
   private readonly logger = new Logger(BettingService.name);
 
@@ -22,8 +23,8 @@ export class BettingService {
     });
   }
 
-  create(market: CreateBettingMarketDto): BettingMarket {
-    const newMarket: BettingMarket = {
+  create(market: CreateBettingMarketDto): BettingMarketDto {
+    const newMarket: BettingMarketDto = {
       id: this.currentMarketId.toString(),
       ...market,
     };
@@ -36,7 +37,7 @@ export class BettingService {
   findAll(filter?: {
     sportType?: SportType;
     eventStatus?: EventStatus;
-  }): BettingMarket[] {
+  }): BettingMarketDto[] {
     return this.bettingMarkets.filter((market) => {
       if (filter?.sportType && market.sportType !== filter.sportType)
         return false;
@@ -45,11 +46,11 @@ export class BettingService {
       return true;
     });
   }
-  findOne(id: string): BettingMarket | undefined {
+  findOne(id: string): BettingMarketDto | undefined {
     return this.bettingMarkets.find((market) => market.id === id);
   }
 
-  updateOdds(marketId: string, updatedOdds: number): BettingMarket {
+  updateOdds(marketId: string, updatedOdds: number): BettingMarketDto {
     const bettingMarket = this.bettingMarkets.find(
       (market) => market.id === marketId,
     );
@@ -84,7 +85,7 @@ export class BettingService {
   }
 
   @OnEvent('odds.updated')
-  handleOddsUpdatedEvent(bettingMarket: BettingMarket) {
+  handleOddsUpdatedEvent(bettingMarket: BettingMarketDto) {
     this.logger.log(
       `Event received: odds updated for market ${bettingMarket.id}, new odds: ${bettingMarket.odds}`,
     );
